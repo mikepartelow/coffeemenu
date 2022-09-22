@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"io"
 	"os"
 	"sort"
@@ -9,6 +10,7 @@ import (
 
 	_ "embed"
 
+	"github.com/charmbracelet/glamour"
 	"github.com/mikepartelow/coffeemenu"
 	"github.com/mikepartelow/coffeemenu/internal/lineacaffe"
 	"github.com/mikepartelow/coffeemenu/internal/mrespresso"
@@ -28,11 +30,28 @@ func render(scrapers []coffeemenu.Scraper, w io.Writer) {
 	t := template.New("menu")
 	tmpl := template.Must(t.Funcs(template.FuncMap{"sorted": sorted}).Parse(menu))
 
+	var buf bytes.Buffer
+
 	for _, s := range scrapers {
-		if err := tmpl.Execute(os.Stdout, s); err != nil {
+		if err := tmpl.Execute(&buf, s); err != nil {
 			log.Error().Err(err).Send()
 		}
 	}
+
+	r, err := glamour.NewTermRenderer(
+		glamour.WithAutoStyle(),
+		glamour.WithWordWrap(0),
+	)
+	if err != nil {
+		log.Fatal().Err(err).Send()
+	}
+
+	out, err := r.Render(buf.String())
+	if err != nil {
+		log.Fatal().Err(err).Send()
+	}
+
+	_, _ = w.Write([]byte(out))
 }
 
 func main() {
