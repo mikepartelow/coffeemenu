@@ -1,11 +1,11 @@
 package main
 
 import (
-	"html/template"
 	"io"
 	"os"
 	"sort"
 	"sync"
+	"text/template"
 
 	_ "embed"
 

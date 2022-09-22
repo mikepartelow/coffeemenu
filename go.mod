@@ -2,7 +2,10 @@ module github.com/mikepartelow/coffeemenu
 
 go 1.19
 
-require github.com/gocolly/colly/v2 v2.1.0
+require (
+	github.com/gocolly/colly/v2 v2.1.0
+	github.com/rs/zerolog v1.28.0
+)
 
 require (
 	github.com/PuerkitoBio/goquery v1.8.0 // indirect
@@ -16,7 +19,6 @@ require (
 	github.com/kennygrant/sanitize v1.2.4 // indirect
 	github.com/mattn/go-colorable v0.1.12 // indirect
 	github.com/mattn/go-isatty v0.0.14 // indirect
-	github.com/rs/zerolog v1.28.0 // indirect
 	github.com/saintfish/chardet v0.0.0-20120816061221-3af4cd4741ca // indirect
 	github.com/temoto/robotstxt v1.1.2 // indirect
 	golang.org/x/net v0.0.0-20220921203646-d300de134e69 // indirect
