@@ -1,9 +1,13 @@
 package main
 
 import (
-	"fmt"
+	"html/template"
+	"io"
+	"os"
 	"sort"
 	"sync"
+
+	_ "embed"
 
 	"github.com/mikepartelow/coffeemenu"
 	"github.com/mikepartelow/coffeemenu/internal/lineacaffe"
@@ -11,6 +15,25 @@ import (
 	"github.com/mikepartelow/coffeemenu/internal/rebootroasting"
 	"github.com/rs/zerolog/log"
 )
+
+//go:embed menu.md.tmpl
+var menu string
+
+func render(scrapers []coffeemenu.Scraper, w io.Writer) {
+	sorted := func(products coffeemenu.Products) coffeemenu.Products {
+		sort.Sort(products)
+		return products
+	}
+
+	t := template.New("menu")
+	tmpl := template.Must(t.Funcs(template.FuncMap{"sorted": sorted}).Parse(menu))
+
+	for _, s := range scrapers {
+		if err := tmpl.Execute(os.Stdout, s); err != nil {
+			log.Error().Err(err).Send()
+		}
+	}
+}
 
 func main() {
 	scrapers := []coffeemenu.Scraper{
@@ -26,7 +49,7 @@ func main() {
 		s := s
 		go func() {
 			if err := s.Scrape(); err != nil {
-				log.Error().Msgf("Error while scraping %q: %v", s.GetName(), err)
+				log.Error().Err(err).Msgf("Error while scraping %q", s.GetName())
 			}
 			wg.Done()
 		}()
@@ -34,15 +57,5 @@ func main() {
 
 	wg.Wait()
 
-	for _, s := range scrapers {
-		products := s.GetProducts()
-		sort.Sort(products)
-
-		fmt.Println("# ", s.GetName())
-		for _, p := range products {
-			fmt.Println("- ", p.Name)
-		}
-		fmt.Println("> ", s.GetStats())
-		fmt.Println()
-	}
+	render(scrapers, os.Stdout)
 }
