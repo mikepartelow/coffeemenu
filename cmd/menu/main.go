@@ -46,13 +46,12 @@ func main() {
 
 	for _, s := range scrapers {
 		wg.Add(1)
-		s := s
-		go func() {
+		go func(s coffeemenu.Scraper) {
 			if err := s.Scrape(); err != nil {
 				log.Error().Err(err).Msgf("Error while scraping %q", s.GetName())
 			}
 			wg.Done()
-		}()
+		}(s)
 	}
 
 	wg.Wait()
