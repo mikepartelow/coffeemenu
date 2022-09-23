@@ -14,7 +14,7 @@ I wonder what's for sale at my favorite coffee roasters?
     # see the menu with boring MarkDown
     ./menu -boring
 
-    # see the menu in CSV
+    # see who is offering Rwanda coffee right now
     ./menu -csv | grep -i rwanda
 
 ## License

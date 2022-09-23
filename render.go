@@ -61,6 +61,7 @@ func CSV(scrapers []*Scraper) string {
 			_ = w.Write([]string{p.Name, s.Name()})
 		}
 	}
+
 	w.Flush()
 	return buf.String()
 }
