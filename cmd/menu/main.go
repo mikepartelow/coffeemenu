@@ -27,10 +27,10 @@ func main() {
 	for _, s := range scrapers {
 		wg.Add(1)
 		go func(s *coffeemenu.Scraper) {
+			defer wg.Done()
 			if err := s.Scrape(); err != nil {
 				log.Error().Err(err).Msgf("Error while scraping %q", s.Name())
 			}
-			wg.Done()
 		}(s)
 	}
 
