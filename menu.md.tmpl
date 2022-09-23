@@ -1,5 +1,7 @@
-# {{.Name -}}
-{{range .Products | sorted}}
-- {{.Name -}}
-{{end}}
+# {{.Name}}
+{{range .Products | sorted -}}
+{{ if .Name -}}
+- {{.Name}}
+{{end -}}
+{{end -}}
 ---

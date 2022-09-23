@@ -1,0 +1,16 @@
+{
+    "name": "Kestrel Coffee Roasters",
+    "urls": [ "https://kestrelcoffees.com/shop/" ],
+    "scrapespec": {
+        "container": "div.module-product-item",
+        "name": [
+            "ChildText",
+            "h2.title"
+        ],
+        "url": [
+            "ChildAttr",
+            "a",
+            "href"
+        ]
+    }
+}

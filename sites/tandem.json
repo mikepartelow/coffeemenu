@@ -1,0 +1,9 @@
+{
+    "name": "Tandem Coffee",
+    "urls": ["https://www.tandemcoffee.com/collections/coffees"],
+    "scrapespec": {
+        "container": "div.product-thumbnail",
+        "name": ["ChildText", "a"],
+        "url": ["ChildAttr", "a", "href"]
+    }
+}

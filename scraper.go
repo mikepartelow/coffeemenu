@@ -7,7 +7,7 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-type ProductSet map[Product]struct{}
+type ProductSet map[string]Product
 
 type Scraper struct {
 	colly    *colly.Collector
@@ -25,10 +25,11 @@ func NewScraper(site Site) *Scraper {
 	}
 
 	s.colly.OnHTML(site.ScrapeSpec.Container, func(e *colly.HTMLElement) {
-		s.products[Product{
-			Name: eFunc(e, site.ScrapeSpec.Name),
+		name := eFunc(e, site.ScrapeSpec.Name)
+		s.products[name] = Product{
+			Name: name,
 			Url:  eFunc(e, site.ScrapeSpec.Url),
-		}] = struct{}{}
+		}
 	})
 
 	return &s
@@ -40,7 +41,7 @@ func (s Scraper) Name() string {
 
 func (s Scraper) Products() Products {
 	var products Products
-	for p := range s.products {
+	for _, p := range s.products {
 		products = append(products, p)
 	}
 	return products
