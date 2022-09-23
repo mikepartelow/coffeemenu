@@ -2,17 +2,20 @@ package main
 
 import (
 	"bytes"
+	"flag"
 	"fmt"
 	"sync"
 
 	_ "embed"
 
-	"github.com/charmbracelet/glamour"
 	"github.com/mikepartelow/coffeemenu"
 	"github.com/rs/zerolog/log"
 )
 
 func main() {
+	boring := flag.Bool("boring", false, "render boring MarkDown")
+	flag.Parse()
+
 	scrapers, err := coffeemenu.ReadScrapers()
 	if err != nil {
 		log.Fatal().Err(err).Msg("Couldn't read scrapers.")
@@ -32,20 +35,14 @@ func main() {
 
 	wg.Wait()
 
-	r, err := glamour.NewTermRenderer(
-		glamour.WithStylePath("dracula"),
-		glamour.WithWordWrap(0),
-	)
-	if err != nil {
-		log.Fatal().Err(err).Send()
-	}
-
+	var out string
 	var buf bytes.Buffer
 	coffeemenu.Render(scrapers, &buf)
 
-	out, err := r.Render(buf.String())
-	if err != nil {
-		log.Fatal().Err(err).Send()
+	if *boring {
+		out = buf.String()
+	} else {
+		out = coffeemenu.Glamourize(buf.String())
 	}
 	fmt.Println(out)
 }

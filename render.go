@@ -7,6 +7,7 @@ import (
 
 	_ "embed"
 
+	"github.com/charmbracelet/glamour"
 	"github.com/rs/zerolog/log"
 )
 
@@ -27,4 +28,21 @@ func Render(scrapers []*Scraper, w io.Writer) {
 			log.Error().Err(err).Send()
 		}
 	}
+}
+
+func Glamourize(in string) string {
+	r, err := glamour.NewTermRenderer(
+		glamour.WithStylePath("dracula"),
+		glamour.WithWordWrap(0),
+	)
+	if err != nil {
+		log.Fatal().Err(err).Send()
+	}
+
+	out, err := r.Render(in)
+	if err != nil {
+		log.Fatal().Err(err).Send()
+	}
+
+	return out
 }
