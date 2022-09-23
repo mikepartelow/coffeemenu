@@ -48,7 +48,7 @@ func main() {
 		wg.Add(1)
 		go func(s coffeemenu.Scraper) {
 			if err := s.Scrape(); err != nil {
-				log.Error().Err(err).Msgf("Error while scraping %q", s.GetName())
+				log.Error().Err(err).Msgf("Error while scraping %q", s.Name())
 			}
 			wg.Done()
 		}(s)

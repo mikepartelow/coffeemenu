@@ -1,31 +1,26 @@
 package mrespresso
 
 import (
-	"github.com/gocolly/colly/v2"
 	"github.com/mikepartelow/coffeemenu"
 )
 
 type MrEspresso struct {
-	coffeemenu.CollyScraper
+	*coffeemenu.CollyScraper
 }
 
 func New() *MrEspresso {
-	m := MrEspresso{
-		CollyScraper: coffeemenu.CollyScraper{
-			Colly: colly.NewCollector(),
-			Name:  "Mr. Espresso",
-			Urls: []string{
+	return &MrEspresso{
+		CollyScraper: coffeemenu.NewCollyScraper(
+			"Mr. Espresso",
+			[]string{
 				"https://mrespresso.com/shop/coffee/espresso/",
 				"https://mrespresso.com/shop/coffee/single-origin/",
 			},
-		},
+			coffeemenu.ScrapeSpec{
+				Container: "h3.product-title",
+				Name:      []string{"ChildText", "a"},
+				Url:       []string{"ChildAttr", "a", "href"},
+			},
+		),
 	}
-	m.CollyScraper.Colly.OnHTML("h3.product-title", func(e *colly.HTMLElement) {
-		m.CollyScraper.Products = append(m.CollyScraper.Products, coffeemenu.Product{
-			Name: e.ChildText("a"),
-			Url:  e.ChildAttr("a", "href"),
-		})
-	})
-
-	return &m
 }
