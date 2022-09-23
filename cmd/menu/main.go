@@ -1,36 +1,14 @@
 package main
 
 import (
-	"io"
 	"os"
-	"sort"
 	"sync"
-	"text/template"
 
 	_ "embed"
 
 	"github.com/mikepartelow/coffeemenu"
 	"github.com/rs/zerolog/log"
 )
-
-//go:embed menu.md.tmpl
-var menu string
-
-func render(scrapers []*coffeemenu.Scraper, w io.Writer) {
-	sorted := func(products coffeemenu.Products) coffeemenu.Products {
-		sort.Sort(products)
-		return products
-	}
-
-	t := template.New("menu")
-	tmpl := template.Must(t.Funcs(template.FuncMap{"sorted": sorted}).Parse(menu))
-
-	for _, s := range scrapers {
-		if err := tmpl.Execute(os.Stdout, s); err != nil {
-			log.Error().Err(err).Send()
-		}
-	}
-}
 
 func main() {
 	scrapers, err := coffeemenu.ReadScrapers()
@@ -52,5 +30,5 @@ func main() {
 
 	wg.Wait()
 
-	render(scrapers, os.Stdout)
+	coffeemenu.Render(scrapers, os.Stdout)
 }
