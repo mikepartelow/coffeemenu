@@ -2,7 +2,6 @@ package coffeemenu
 
 import (
 	"io"
-	"os"
 	"sort"
 	"text/template"
 
@@ -24,7 +23,7 @@ func Render(scrapers []*Scraper, w io.Writer) {
 	tmpl := template.Must(t.Funcs(template.FuncMap{"sorted": sorted}).Parse(menu))
 
 	for _, s := range scrapers {
-		if err := tmpl.Execute(os.Stdout, s); err != nil {
+		if err := tmpl.Execute(w, s); err != nil {
 			log.Error().Err(err).Send()
 		}
 	}

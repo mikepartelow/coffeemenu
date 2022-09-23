@@ -1,11 +1,13 @@
 package main
 
 import (
-	"os"
+	"bytes"
+	"fmt"
 	"sync"
 
 	_ "embed"
 
+	"github.com/charmbracelet/glamour"
 	"github.com/mikepartelow/coffeemenu"
 	"github.com/rs/zerolog/log"
 )
@@ -30,5 +32,20 @@ func main() {
 
 	wg.Wait()
 
-	coffeemenu.Render(scrapers, os.Stdout)
+	r, err := glamour.NewTermRenderer(
+		glamour.WithStylePath("dracula"),
+		glamour.WithWordWrap(0),
+	)
+	if err != nil {
+		log.Fatal().Err(err).Send()
+	}
+
+	var buf bytes.Buffer
+	coffeemenu.Render(scrapers, &buf)
+
+	out, err := r.Render(buf.String())
+	if err != nil {
+		log.Fatal().Err(err).Send()
+	}
+	fmt.Println(out)
 }
