@@ -1,29 +1,34 @@
 package coffeemenu
 
 import (
+	"path/filepath"
+
 	"github.com/gocolly/colly/v2"
 	"github.com/rs/zerolog/log"
 )
 
+type ProductSet map[Product]struct{}
+
 type Scraper struct {
 	colly    *colly.Collector
 	name     string
-	products Products
+	products ProductSet
 	urls     []string
 }
 
 func NewScraper(site Site) *Scraper {
 	s := Scraper{
-		colly: colly.NewCollector(),
-		name:  site.Name,
-		urls:  site.Urls,
+		colly:    colly.NewCollector(),
+		name:     site.Name,
+		urls:     site.Urls,
+		products: make(ProductSet),
 	}
 
 	s.colly.OnHTML(site.ScrapeSpec.Container, func(e *colly.HTMLElement) {
-		s.products = append(s.products, Product{
+		s.products[Product{
 			Name: eFunc(e, site.ScrapeSpec.Name),
 			Url:  eFunc(e, site.ScrapeSpec.Url),
-		})
+		}] = struct{}{}
 	})
 
 	return &s
@@ -34,7 +39,11 @@ func (s Scraper) Name() string {
 }
 
 func (s Scraper) Products() Products {
-	return s.products
+	var products Products
+	for p := range s.products {
+		products = append(products, p)
+	}
+	return products
 }
 
 func (s Scraper) Scrape() error {
@@ -57,6 +66,8 @@ func eFunc(e *colly.HTMLElement, args []string) string {
 		return e.ChildText(args[1])
 	case "ChildAttr":
 		return e.ChildAttr(args[1], args[2])
+	case "ChildAttrBase":
+		return filepath.Base(e.ChildAttr(args[1], args[2]))
 	case "Attr":
 		return e.Attr(args[1])
 	default:
