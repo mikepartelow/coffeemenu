@@ -2,9 +2,20 @@
 
 I wonder what's for sale at my favorite coffee roasters?
 
-## Build && Run
+## Build
 
-    go build ./cmd/menu && ./menu
+    go build ./cmd/menu
+
+## Run
+
+    # see the menu
+    ./menu
+
+    # see the menu with boring MarkDown
+    ./menu -boring
+
+    # see the menu in CSV
+    ./menu -csv | grep -i rwanda
 
 ## License
 

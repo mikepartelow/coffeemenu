@@ -1,6 +1,8 @@
 package coffeemenu
 
 import (
+	"bytes"
+	"encoding/csv"
 	"io"
 	"sort"
 	"text/template"
@@ -45,4 +47,20 @@ func Glamourize(in string) string {
 	}
 
 	return out
+}
+
+func CSV(scrapers []*Scraper) string {
+	var buf bytes.Buffer
+
+	w := csv.NewWriter(&buf)
+	_ = w.Write([]string{"product", "roaster"})
+
+	for _, s := range scrapers {
+		log.Debug().Msg(s.Name())
+		for _, p := range s.Products() {
+			_ = w.Write([]string{p.Name, s.Name()})
+		}
+	}
+	w.Flush()
+	return buf.String()
 }

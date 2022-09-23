@@ -14,6 +14,7 @@ import (
 
 func main() {
 	boring := flag.Bool("boring", false, "render boring MarkDown")
+	csv := flag.Bool("csv", false, "render CSV")
 	flag.Parse()
 
 	scrapers, err := coffeemenu.ReadScrapers()
@@ -36,13 +37,18 @@ func main() {
 	wg.Wait()
 
 	var out string
-	var buf bytes.Buffer
-	coffeemenu.Render(scrapers, &buf)
 
-	if *boring {
-		out = buf.String()
+	if *csv {
+		out = coffeemenu.CSV(scrapers)
 	} else {
-		out = coffeemenu.Glamourize(buf.String())
+		var buf bytes.Buffer
+		coffeemenu.Render(scrapers, &buf)
+
+		if *boring {
+			out = buf.String()
+		} else {
+			out = coffeemenu.Glamourize(buf.String())
+		}
 	}
 	fmt.Println(out)
 }
