@@ -10,16 +10,13 @@ import (
 	_ "embed"
 
 	"github.com/mikepartelow/coffeemenu"
-	"github.com/mikepartelow/coffeemenu/internal/lineacaffe"
-	"github.com/mikepartelow/coffeemenu/internal/mrespresso"
-	"github.com/mikepartelow/coffeemenu/internal/rebootroasting"
 	"github.com/rs/zerolog/log"
 )
 
 //go:embed menu.md.tmpl
 var menu string
 
-func render(scrapers []coffeemenu.Scraper, w io.Writer) {
+func render(scrapers []*coffeemenu.Scraper, w io.Writer) {
 	sorted := func(products coffeemenu.Products) coffeemenu.Products {
 		sort.Sort(products)
 		return products
@@ -36,17 +33,16 @@ func render(scrapers []coffeemenu.Scraper, w io.Writer) {
 }
 
 func main() {
-	scrapers := []coffeemenu.Scraper{
-		mrespresso.New(),
-		rebootroasting.New(),
-		lineacaffe.New(),
+	scrapers, err := coffeemenu.ReadScrapers()
+	if err != nil {
+		log.Fatal().Err(err).Msg("Couldn't read scrapers.")
 	}
 
 	var wg sync.WaitGroup
 
 	for _, s := range scrapers {
 		wg.Add(1)
-		go func(s coffeemenu.Scraper) {
+		go func(s *coffeemenu.Scraper) {
 			if err := s.Scrape(); err != nil {
 				log.Error().Err(err).Msgf("Error while scraping %q", s.Name())
 			}

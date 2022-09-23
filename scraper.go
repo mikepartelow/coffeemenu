@@ -1,59 +1,45 @@
 package coffeemenu
 
 import (
-	"github.com/rs/zerolog/log"
-
 	"github.com/gocolly/colly/v2"
+	"github.com/rs/zerolog/log"
 )
 
-type Scraper interface {
-	Scrape() error
-	Name() string
-	Products() Products
-	Stats() string
-}
-
-type CollyScraper struct {
+type Scraper struct {
 	colly    *colly.Collector
 	name     string
 	products Products
 	urls     []string
 }
 
-type ScrapeSpec struct {
-	Container string
-	Name      []string
-	Url       []string
-}
-
-func NewCollyScraper(name string, urls []string, spec ScrapeSpec) *CollyScraper {
-	s := CollyScraper{
+func NewScraper(site Site) *Scraper {
+	s := Scraper{
 		colly: colly.NewCollector(),
-		name:  name,
-		urls:  urls,
+		name:  site.Name,
+		urls:  site.Urls,
 	}
 
-	s.colly.OnHTML(spec.Container, func(e *colly.HTMLElement) {
+	s.colly.OnHTML(site.ScrapeSpec.Container, func(e *colly.HTMLElement) {
 		s.products = append(s.products, Product{
-			Name: eFunc(e, spec.Name),
-			Url:  eFunc(e, spec.Url),
+			Name: eFunc(e, site.ScrapeSpec.Name),
+			Url:  eFunc(e, site.ScrapeSpec.Url),
 		})
 	})
 
 	return &s
 }
 
-func (cs CollyScraper) Name() string {
-	return cs.name
+func (s Scraper) Name() string {
+	return s.name
 }
 
-func (cs CollyScraper) Products() Products {
-	return cs.products
+func (s Scraper) Products() Products {
+	return s.products
 }
 
-func (cs CollyScraper) Scrape() error {
-	for _, url := range cs.urls {
-		if err := cs.colly.Visit(url); err != nil {
+func (s Scraper) Scrape() error {
+	for _, url := range s.urls {
+		if err := s.colly.Visit(url); err != nil {
 			return err
 		}
 	}
@@ -61,8 +47,8 @@ func (cs CollyScraper) Scrape() error {
 	return nil
 }
 
-func (cs CollyScraper) Stats() string {
-	return cs.colly.String()
+func (s Scraper) Stats() string {
+	return s.colly.String()
 }
 
 func eFunc(e *colly.HTMLElement, args []string) string {

@@ -1,0 +1,16 @@
+{
+    "name": "Linea Caffe",
+    "urls": [ "https://lineacaffe.com/shop/coffee/" ],
+    "scrapespec": {
+        "container": "div.product",
+        "name": [
+            "ChildText",
+            "h4"
+        ],
+        "url": [
+            "ChildAttr",
+            "a",
+            "href"
+        ]
+    }
+}
