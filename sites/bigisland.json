@@ -1,9 +1,0 @@
-{
-    "name": "Big Island Coffee Roasters",
-    "urls": [ "https://bigislandcoffeeroasters.com/collections/hawaiian-coffees" ],
-    "scrapespec": {
-        "container": "h2.ProductItem__Title",
-        "name": ["ChildText", "a"],
-        "url": ["ChildAttr", "a", "href"]
-    }
-}

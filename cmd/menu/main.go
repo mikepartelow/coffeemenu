@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"embed"
 	"flag"
 	"fmt"
 	"sync"
@@ -12,12 +13,15 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
+//go:embed sites/*.json
+var sites embed.FS
+
 func main() {
 	boring := flag.Bool("boring", false, "render boring MarkDown")
 	csv := flag.Bool("csv", false, "render CSV")
 	flag.Parse()
 
-	scrapers, err := coffeemenu.ReadScrapers()
+	scrapers, err := coffeemenu.ReadScrapers(sites)
 	if err != nil {
 		log.Fatal().Err(err).Msg("Couldn't read scrapers.")
 	}

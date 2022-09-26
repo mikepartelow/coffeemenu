@@ -1,9 +1,11 @@
 package coffeemenu
 
 import (
-	"embed"
 	"encoding/json"
+	"io/fs"
 	"path"
+
+	"github.com/rs/zerolog/log"
 )
 
 type ScrapeSpec struct {
@@ -18,10 +20,12 @@ type Site struct {
 	ScrapeSpec ScrapeSpec `json:"scrapespec"`
 }
 
-//go:embed sites/*
-var sites embed.FS
+type ScrapeSpecFs interface {
+	fs.ReadDirFS
+	fs.ReadFileFS
+}
 
-func ReadScrapers() ([]*Scraper, error) {
+func ReadScrapers(sites ScrapeSpecFs) ([]*Scraper, error) {
 	var scrapers []*Scraper
 
 	siteFiles, err := sites.ReadDir("sites")
@@ -36,6 +40,7 @@ func ReadScrapers() ([]*Scraper, error) {
 		}
 		var site Site
 		if err := json.Unmarshal(bytes, &site); err != nil {
+			log.Error().Err(err).Send()
 			return nil, err
 		}
 		scrapers = append(scrapers, NewScraper(site))
