@@ -1,0 +1,15 @@
+{
+    "name": "Reboot Roasting",
+    "urls": [ "https://www.rebootroasting.com/products?category=Coffee" ],
+    "scrapespec": {
+        "container": "a.product",
+        "name": [
+            "ChildText",
+            "div.product-title"
+        ],
+        "url": [
+            "Attr",
+            "href"
+        ]
+    }
+}

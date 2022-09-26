@@ -1,0 +1,18 @@
+{
+    "name": "Devout Coffee",
+    "urls": [
+        "https://www.devoutcoffee.com/coffee"
+    ],
+    "scrapespec": {
+        "container": "div.ProductList-item",
+        "name": [
+            "ChildText",
+            "h1.ProductList-title"
+        ],
+        "url": [
+            "ChildAttr",
+            "a",
+            "href"
+        ]
+    }
+}

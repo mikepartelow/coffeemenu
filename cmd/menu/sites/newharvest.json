@@ -1,0 +1,12 @@
+{
+    "name": "New Harvest Coffee Roasters",
+    "urls": [
+        "https://newharvestcoffee.com/collections/single-origin",
+        "https://newharvestcoffee.com/collections/blends"
+    ],
+    "scrapespec": {
+        "container": "div.product__holder",
+        "name": ["ChildText", "strong"],
+        "url": ["ChildAttr", "a", "href"]
+    }
+}

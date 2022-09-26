@@ -1,0 +1,16 @@
+{
+    "name": "Three Ships Coffee",
+    "urls": [ "https://threeshipscoffee.com" ],
+    "scrapespec": {
+        "container": "div.grid__item",
+        "name": [
+            "ChildText",
+            "p.grid-link__title"
+        ],
+        "url": [
+            "ChildAttr",
+            "a",
+            "href"
+        ]
+    }
+}
