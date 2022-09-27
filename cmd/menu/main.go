@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"embed"
 	"flag"
 	"fmt"
 	"sync"
@@ -17,11 +18,29 @@ func main() {
 	csv := flag.Bool("csv", false, "render CSV")
 	flag.Parse()
 
-	scrapers, err := coffeemenu.ReadScrapers()
+	out := render(scrape(readScrapers()), *csv, *boring)
+
+	fmt.Println(out)
+}
+
+//go:embed sites/*.json
+var sitesFS embed.FS
+
+func readScrapers() []*coffeemenu.Scraper {
+	sites, err := coffeemenu.ReadSites(sitesFS)
 	if err != nil {
-		log.Fatal().Err(err).Msg("Couldn't read scrapers.")
+		log.Fatal().Err(err).Msg("Couldn't read sites.")
 	}
 
+	var scrapers []*coffeemenu.Scraper
+	for _, site := range sites {
+		scrapers = append(scrapers, coffeemenu.NewScraper(site, nil))
+	}
+
+	return scrapers
+}
+
+func scrape(scrapers []*coffeemenu.Scraper) []*coffeemenu.Scraper {
 	var wg sync.WaitGroup
 
 	for _, s := range scrapers {
@@ -36,19 +55,20 @@ func main() {
 
 	wg.Wait()
 
-	var out string
+	return scrapers
+}
 
-	if *csv {
-		out = coffeemenu.CSV(scrapers)
-	} else {
-		var buf bytes.Buffer
-		coffeemenu.Render(scrapers, &buf)
-
-		if *boring {
-			out = buf.String()
-		} else {
-			out = coffeemenu.Glamourize(buf.String())
-		}
+func render(scrapers []*coffeemenu.Scraper, csv, boring bool) string {
+	if csv {
+		return coffeemenu.CSV(scrapers)
 	}
-	fmt.Println(out)
+
+	var buf bytes.Buffer
+	coffeemenu.Render(scrapers, &buf)
+
+	if boring {
+		return buf.String()
+	}
+
+	return coffeemenu.Glamourize(buf.String())
 }
