@@ -25,16 +25,16 @@ type ScrapeSpecFs interface {
 	fs.ReadFileFS
 }
 
-func ReadScrapers(sites ScrapeSpecFs) ([]*Scraper, error) {
-	var scrapers []*Scraper
+func ReadSites(sitesFS ScrapeSpecFs) ([]Site, error) {
+	var sites []Site
 
-	siteFiles, err := sites.ReadDir("sites")
+	siteFiles, err := sitesFS.ReadDir("sites")
 	if err != nil {
 		return nil, err
 	}
 
 	for _, file := range siteFiles {
-		bytes, err := sites.ReadFile(path.Join("sites", file.Name()))
+		bytes, err := sitesFS.ReadFile(path.Join("sites", file.Name()))
 		if err != nil {
 			return nil, err
 		}
@@ -43,8 +43,8 @@ func ReadScrapers(sites ScrapeSpecFs) ([]*Scraper, error) {
 			log.Error().Err(err).Send()
 			return nil, err
 		}
-		scrapers = append(scrapers, NewScraper(site, nil))
+		sites = append(sites, site)
 	}
 
-	return scrapers, nil
+	return sites, nil
 }

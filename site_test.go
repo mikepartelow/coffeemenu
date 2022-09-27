@@ -20,10 +20,11 @@ var testfs fstest.MapFS = fstest.MapFS{
 	},
 }
 
-func TestReadScrapers(t *testing.T) {
-	scrapers, err := coffeemenu.ReadScrapers(testfs)
+func TestReadSites(t *testing.T) {
+	sites, err := coffeemenu.ReadSites(testfs)
 	assert.NoError(t, err)
-
-	assert.Len(t, scrapers, 1)
-	assert.Equal(t, scrapers[0].Name(), "Banana Pants Roasting")
+	assert.Len(t, sites, 1)
+	assert.Equal(t, sites[0].Name, "Banana Pants Roasting")
+	assert.Equal(t, sites[0].Urls, []string{"https://www.bananapantsroasting.com/buystuff"})
+	assert.Equal(t, sites[0].ScrapeSpec.Name, []string{"What", "Is", "This"})
 }

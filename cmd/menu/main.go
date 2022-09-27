@@ -14,17 +14,21 @@ import (
 )
 
 //go:embed sites/*.json
-var sites embed.FS
+var siteFS embed.FS
 
 func main() {
 	boring := flag.Bool("boring", false, "render boring MarkDown")
 	csv := flag.Bool("csv", false, "render CSV")
 	flag.Parse()
 
-	// todo: this should be coffeemenu.ReadSites() followed by InitScrapers(sites)
-	scrapers, err := coffeemenu.ReadScrapers(sites)
+	sites, err := coffeemenu.ReadSites(siteFS)
 	if err != nil {
-		log.Fatal().Err(err).Msg("Couldn't read scrapers.")
+		log.Fatal().Err(err).Msg("Couldn't read sites.")
+	}
+
+	var scrapers []*coffeemenu.Scraper
+	for _, site := range sites {
+		scrapers = append(scrapers, coffeemenu.NewScraper(site, nil))
 	}
 
 	var wg sync.WaitGroup
