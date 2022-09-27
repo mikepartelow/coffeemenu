@@ -43,7 +43,7 @@ func ReadScrapers(sites ScrapeSpecFs) ([]*Scraper, error) {
 			log.Error().Err(err).Send()
 			return nil, err
 		}
-		scrapers = append(scrapers, NewScraper(site))
+		scrapers = append(scrapers, NewScraper(site, nil))
 	}
 
 	return scrapers, nil

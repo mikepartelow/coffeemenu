@@ -21,6 +21,7 @@ func main() {
 	csv := flag.Bool("csv", false, "render CSV")
 	flag.Parse()
 
+	// todo: this should be coffeemenu.ReadSites() followed by InitScrapers(sites)
 	scrapers, err := coffeemenu.ReadScrapers(sites)
 	if err != nil {
 		log.Fatal().Err(err).Msg("Couldn't read scrapers.")

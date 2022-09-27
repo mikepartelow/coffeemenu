@@ -1,6 +1,7 @@
 package coffeemenu
 
 import (
+	"net/http"
 	"path/filepath"
 
 	"github.com/gocolly/colly/v2"
@@ -16,7 +17,7 @@ type Scraper struct {
 	urls     []string
 }
 
-func NewScraper(site Site) *Scraper {
+func NewScraper(site Site, f http.RoundTripper) *Scraper {
 	s := Scraper{
 		colly:    colly.NewCollector(),
 		name:     site.Name,
@@ -24,11 +25,16 @@ func NewScraper(site Site) *Scraper {
 		products: make(ProductSet),
 	}
 
+	if f != nil {
+		s.colly.WithTransport(f)
+	}
+
 	s.colly.OnHTML(site.ScrapeSpec.Container, func(e *colly.HTMLElement) {
-		name := eFunc(e, site.ScrapeSpec.Name)
-		s.products[name] = Product{
-			Name: name,
-			Url:  eFunc(e, site.ScrapeSpec.Url),
+		if name := eFunc(e, site.ScrapeSpec.Name); name != "" {
+			s.products[name] = Product{
+				Name: name,
+				Url:  eFunc(e, site.ScrapeSpec.Url),
+			}
 		}
 	})
 
