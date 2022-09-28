@@ -1,0 +1,19 @@
+{
+    "name": "Zoka Coffee",
+    "urls": [
+        "https://www.zokacoffee.com/collections/single-origins",
+        "https://www.zokacoffee.com/collections/blends/Blends"
+    ],
+    "scrapespec": {
+        "container": "div.card-information",
+        "name": [
+            "ChildText",
+            "a"
+        ],
+        "url": [
+            "ChildAttr",
+            "a",
+            "href"
+        ]
+    }
+}

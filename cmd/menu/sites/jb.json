@@ -1,0 +1,16 @@
+{
+    "name": "JBC Coffee Roasters",
+    "urls": [ "https://jbccoffeeroasters.com/product-category/coffee/" ],
+    "scrapespec": {
+        "container": "div.product",
+        "name": [
+            "ChildText",
+            ".origin"
+        ],
+        "url": [
+            "ChildAttr",
+            "a",
+            "href"
+        ]
+    }
+}

@@ -1,0 +1,16 @@
+{
+    "name": "Revolution Coffee Roasters",
+    "urls": [ "https://www.revolutioncoffeeroasters.com/coffee-shipped-to-you.html" ],
+    "scrapespec": {
+        "container": "div.product-grid__item",
+        "name": [
+            "ChildText",
+            "h2"
+        ],
+        "url": [
+            "ChildAttr",
+            "a",
+            "href"
+        ]
+    }
+}

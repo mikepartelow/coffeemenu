@@ -1,0 +1,16 @@
+{
+    "name": "Cutbow Coffee",
+    "urls": [ "https://www.cutbowcoffee.com/shop" ],
+    "scrapespec": {
+        "container": "li[data-hook=\"product-list-grid-item\"]",
+        "name": [
+            "ChildText",
+            "h3"
+        ],
+        "url": [
+            "ChildAttr",
+            "a",
+            "href"
+        ]
+    }
+}

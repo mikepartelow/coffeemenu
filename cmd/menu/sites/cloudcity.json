@@ -1,0 +1,19 @@
+{
+    "name": "Cloud City Coffee Roasting",
+    "urls": [
+        "https://www.cloudcitycoffeeroasting.com/collections/blends",
+        "https://www.cloudcitycoffeeroasting.com/collections/single-origin"
+    ],
+    "scrapespec": {
+        "container": "div.product-item__info",
+        "name": [
+            "ChildText",
+            "a"
+        ],
+        "url": [
+            "ChildAttr",
+            "a",
+            "href"
+        ]
+    }
+}
