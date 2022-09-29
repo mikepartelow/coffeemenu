@@ -7,6 +7,7 @@ import (
 	"io"
 	"net/http"
 	"testing"
+	"text/template"
 
 	"github.com/mikepartelow/coffeemenu"
 	"github.com/stretchr/testify/assert"
@@ -18,61 +19,59 @@ func (f RoundTripFunc) RoundTrip(r *http.Request) (*http.Response, error) {
 	return f(r)
 }
 
-//go:embed fixtures
-var fixtures embed.FS
+type TestCase struct {
+	ProductName   string
+	ProductUrl    string
+	Fixture       string
+	ContainerSpec string
+	NameSpec      []string
+	UrlSpec       []string
+}
 
 func TestScraper(t *testing.T) {
-	testCases := []struct {
-		productName   string
-		productUrl    string
-		fixture       string
-		containerSpec string
-		nameSpec      []string
-		urlSpec       []string
-	}{
+	testCases := []TestCase{
 		{
-			productName:   "Colombia Supremo",
-			productUrl:    "/colombia-supremo/4",
-			fixture:       "scraper.0.html",
-			containerSpec: "div",
-			nameSpec:      []string{"ChildText", ".name"},
-			urlSpec:       []string{"ChildText", ".url"},
+			ProductName:   "Colombia Supremo",
+			ProductUrl:    "/colombia-supremo/4",
+			Fixture:       "scraper.0.html",
+			ContainerSpec: "div",
+			NameSpec:      []string{"ChildText", ".name"},
+			UrlSpec:       []string{"ChildText", ".url"},
 		},
 		{
-			productName:   "Ethiopia Sidamo",
-			productUrl:    "/ethiopia-sidamo/9",
-			fixture:       "scraper.1.html",
-			containerSpec: "div",
-			nameSpec:      []string{"ChildAttr", ".name", "bean"},
-			urlSpec:       []string{"Attr", "url"},
+			ProductName:   "Ethiopia Sidamo",
+			ProductUrl:    "/ethiopia-sidamo/9",
+			Fixture:       "scraper.1.html",
+			ContainerSpec: "div",
+			NameSpec:      []string{"ChildAttr", ".name", "bean"},
+			UrlSpec:       []string{"Attr", "url"},
 		},
 		{
-			productName:   "Mexico Chiapas",
-			productUrl:    "mexico-chiapas",
-			fixture:       "scraper.2.html",
-			containerSpec: "div",
-			nameSpec:      []string{"ChildText", ".name"},
-			urlSpec:       []string{"ChildAttrBase", "a", "href"},
+			ProductName:   "Mexico Chiapas",
+			ProductUrl:    "mexico-chiapas",
+			Fixture:       "scraper.2.html",
+			ContainerSpec: "div",
+			NameSpec:      []string{"ChildText", ".name"},
+			UrlSpec:       []string{"ChildAttrBase", "a", "href"},
 		},
 	}
 
 	t.Run("it scrapes", func(t *testing.T) {
 		for _, tC := range testCases {
-			t.Run(tC.fixture, func(t *testing.T) {
-				testPage, err := fixtures.ReadFile("fixtures/" + tC.fixture)
-				assert.NoError(t, err)
+			t.Run(tC.Fixture, func(t *testing.T) {
+				testPage := makeTestPage(t, tC)
 
 				rt := makeRoundTripper(testPage)
-				site := makeSite(tC.containerSpec, tC.nameSpec, tC.urlSpec)
+				site := makeSite(tC.ContainerSpec, tC.NameSpec, tC.UrlSpec)
 
 				s := coffeemenu.NewScraper(site, rt)
-				err = s.Scrape()
+				err := s.Scrape()
 				assert.NoError(t, err)
 				assert.Len(t, s.Products(), 1)
 
 				p := s.Products()[0]
-				assert.Equal(t, p.Name, tC.productName)
-				assert.Equal(t, p.Url, tC.productUrl)
+				assert.Equal(t, p.Name, tC.ProductName)
+				assert.Equal(t, p.Url, tC.ProductUrl)
 			})
 		}
 	})
@@ -98,5 +97,19 @@ func makeSite(container string, name, url []string) coffeemenu.Site {
 			Url:       url,
 		},
 	}
+}
 
+//go:embed fixtures
+var fixtures embed.FS
+
+func makeTestPage(t *testing.T, tC TestCase) []byte {
+	testPage := &bytes.Buffer{}
+
+	fixture, err := fixtures.ReadFile("fixtures/" + tC.Fixture)
+	assert.NoError(t, err)
+
+	err = template.Must(template.New(tC.Fixture).Parse(string(fixture))).Execute(testPage, tC)
+	assert.NoError(t, err)
+
+	return testPage.Bytes()
 }
