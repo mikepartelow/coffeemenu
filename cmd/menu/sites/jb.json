@@ -4,8 +4,10 @@
     "scrapespec": {
         "container": "div.product",
         "name": [
-            "ChildText",
-            ".origin"
+            "ChildTextJoin",
+            ".origin",
+            "h3",
+            " "
         ],
         "url": [
             "ChildAttr",
