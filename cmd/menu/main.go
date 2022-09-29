@@ -18,13 +18,30 @@ func main() {
 	csv := flag.Bool("csv", false, "render CSV")
 	flag.Parse()
 
-	out := render(scrape(readScrapers()), *csv, *boring)
+	var scrapers []*coffeemenu.Scraper
+
+	if args := flag.Args(); len(args) == 1 {
+		scrapers = append(scrapers, readScraper(args[0]))
+	} else {
+		scrapers = readScrapers()
+	}
+
+	out := render(scrape(scrapers), *csv, *boring)
 
 	fmt.Println(out)
 }
 
 //go:embed sites/*.json
 var sitesFS embed.FS
+
+func readScraper(name string) *coffeemenu.Scraper {
+	site, err := coffeemenu.ReadSite(sitesFS, name)
+	if err != nil {
+		log.Fatal().Err(err).Msgf("Couldn't read site %q.", name)
+	}
+
+	return coffeemenu.NewScraper(*site, nil)
+}
 
 func readScrapers() []*coffeemenu.Scraper {
 	sites, err := coffeemenu.ReadSites(sitesFS)

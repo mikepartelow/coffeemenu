@@ -25,6 +25,21 @@ type ScrapeSpecFs interface {
 	fs.ReadFileFS
 }
 
+func ReadSite(sitesFS ScrapeSpecFs, name string) (*Site, error) {
+	bytes, err := sitesFS.ReadFile(path.Join("sites", name+".json"))
+	if err != nil {
+		return nil, err
+	}
+
+	var site Site
+	if err := json.Unmarshal(bytes, &site); err != nil {
+		log.Error().Err(err).Send()
+		return nil, err
+	}
+
+	return &site, nil
+}
+
 func ReadSites(sitesFS ScrapeSpecFs) ([]Site, error) {
 	var sites []Site
 

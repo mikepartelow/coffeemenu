@@ -28,3 +28,12 @@ func TestReadSites(t *testing.T) {
 	assert.Equal(t, sites[0].Urls, []string{"https://www.bananapantsroasting.com/buystuff"})
 	assert.Equal(t, sites[0].ScrapeSpec.Name, []string{"What", "Is", "This"})
 }
+
+func TestReadSite(t *testing.T) {
+	site, err := coffeemenu.ReadSite(testfs, "bananapantsroasting")
+	assert.NoError(t, err)
+	assert.Equal(t, site.Name, "Banana Pants Roasting")
+	assert.Equal(t, site.Urls, []string{"https://www.bananapantsroasting.com/buystuff"})
+	assert.Equal(t, site.ScrapeSpec.Name, []string{"What", "Is", "This"})
+
+}

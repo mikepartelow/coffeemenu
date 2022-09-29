@@ -6,6 +6,7 @@ import (
 	_ "embed"
 	"io"
 	"net/http"
+	"strings"
 	"testing"
 	"text/template"
 
@@ -22,6 +23,8 @@ func (f RoundTripFunc) RoundTrip(r *http.Request) (*http.Response, error) {
 type TestCase struct {
 	ProductName   string
 	ProductUrl    string
+	Extra         string
+	Join          string
 	Fixture       string
 	ContainerSpec string
 	NameSpec      []string
@@ -54,6 +57,16 @@ func TestScraper(t *testing.T) {
 			NameSpec:      []string{"ChildText", ".name"},
 			UrlSpec:       []string{"ChildAttrBase", "a", "href"},
 		},
+		{
+			ProductName:   "Sulawesi Toraja",
+			Extra:         "Mike's Estate",
+			Join:          " - ",
+			ProductUrl:    "sulawesi/toraja/show.html",
+			Fixture:       "scraper.3.html",
+			ContainerSpec: "div",
+			NameSpec:      []string{"ChildTextJoin", ".name", ".extra", " - "},
+			UrlSpec:       []string{"ChildAttr", "a", "href"},
+		},
 	}
 
 	t.Run("it scrapes", func(t *testing.T) {
@@ -69,9 +82,14 @@ func TestScraper(t *testing.T) {
 				assert.NoError(t, err)
 				assert.Len(t, s.Products(), 1)
 
+				wantProductName := tC.ProductName
+				if tC.Extra != "" {
+					wantProductName = strings.Join([]string{tC.ProductName, tC.Extra}, tC.Join)
+				}
+
 				p := s.Products()[0]
-				assert.Equal(t, p.Name, tC.ProductName)
-				assert.Equal(t, p.Url, tC.ProductUrl)
+				assert.Equal(t, wantProductName, p.Name)
+				assert.Equal(t, tC.ProductUrl, p.Url)
 			})
 		}
 	})

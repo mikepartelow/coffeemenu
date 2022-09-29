@@ -3,6 +3,7 @@ package coffeemenu
 import (
 	"net/http"
 	"path/filepath"
+	"strings"
 
 	"github.com/gocolly/colly/v2"
 	"github.com/rs/zerolog/log"
@@ -73,10 +74,15 @@ func eFunc(e *colly.HTMLElement, args []string) string {
 		return e.ChildText(args[1])
 	case "ChildAttr":
 		return e.ChildAttr(args[1], args[2])
-	case "ChildAttrBase":
-		return filepath.Base(e.ChildAttr(args[1], args[2]))
 	case "Attr":
 		return e.Attr(args[1])
+	case "ChildAttrBase":
+		return filepath.Base(e.ChildAttr(args[1], args[2]))
+	case "ChildTextJoin":
+		a, b := strings.TrimSpace(e.ChildText(args[1])), strings.TrimSpace(e.ChildText(args[2]))
+		if a != "" && b != "" {
+			return strings.Join([]string{a, b}, args[3])
+		}
 	default:
 		log.Fatal().Msgf("unknown nameFunc name: %q", args[0])
 	}
