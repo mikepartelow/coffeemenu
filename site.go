@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"io/fs"
 	"path"
+	"strings"
 
 	"github.com/rs/zerolog/log"
 )
@@ -18,6 +19,7 @@ type Site struct {
 	Name       string     `json:"name"`
 	Urls       []string   `json:"urls"`
 	ScrapeSpec ScrapeSpec `json:"scrapespec"`
+	ID         string
 }
 
 type ScrapeSpecFs interface {
@@ -36,6 +38,7 @@ func ReadSite(sitesFS ScrapeSpecFs, name string) (*Site, error) {
 		log.Error().Err(err).Send()
 		return nil, err
 	}
+	site.ID = name
 
 	return &site, nil
 }
@@ -58,6 +61,7 @@ func ReadSites(sitesFS ScrapeSpecFs) ([]Site, error) {
 			log.Error().Err(err).Send()
 			return nil, err
 		}
+		site.ID = strings.Replace(file.Name(), ".json", "", 1)
 		sites = append(sites, site)
 	}
 

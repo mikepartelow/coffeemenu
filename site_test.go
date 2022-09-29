@@ -24,16 +24,14 @@ func TestReadSites(t *testing.T) {
 	sites, err := coffeemenu.ReadSites(testfs)
 	assert.NoError(t, err)
 	assert.Len(t, sites, 1)
-	assert.Equal(t, sites[0].Name, "Banana Pants Roasting")
-	assert.Equal(t, sites[0].Urls, []string{"https://www.bananapantsroasting.com/buystuff"})
-	assert.Equal(t, sites[0].ScrapeSpec.Name, []string{"What", "Is", "This"})
+	assert.Equal(t, "bananapantsroasting", sites[0].ID)
 }
 
 func TestReadSite(t *testing.T) {
 	site, err := coffeemenu.ReadSite(testfs, "bananapantsroasting")
 	assert.NoError(t, err)
-	assert.Equal(t, site.Name, "Banana Pants Roasting")
-	assert.Equal(t, site.Urls, []string{"https://www.bananapantsroasting.com/buystuff"})
-	assert.Equal(t, site.ScrapeSpec.Name, []string{"What", "Is", "This"})
-
+	assert.Equal(t, "Banana Pants Roasting", site.Name)
+	assert.Equal(t, []string{"https://www.bananapantsroasting.com/buystuff"}, site.Urls)
+	assert.Equal(t, []string{"What", "Is", "This"}, site.ScrapeSpec.Name)
+	assert.Equal(t, "bananapantsroasting", site.ID)
 }

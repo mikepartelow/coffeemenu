@@ -16,6 +16,7 @@ type Scraper struct {
 	name     string
 	products ProductSet
 	urls     []string
+	siteID   string
 }
 
 func NewScraper(site Site, f http.RoundTripper) *Scraper {
@@ -24,6 +25,7 @@ func NewScraper(site Site, f http.RoundTripper) *Scraper {
 		name:     site.Name,
 		urls:     site.Urls,
 		products: make(ProductSet),
+		siteID:   site.ID,
 	}
 
 	if f != nil {
@@ -44,6 +46,10 @@ func NewScraper(site Site, f http.RoundTripper) *Scraper {
 
 func (s Scraper) Name() string {
 	return s.name
+}
+
+func (s Scraper) ID() string {
+	return s.siteID
 }
 
 func (s Scraper) Products() Products {
