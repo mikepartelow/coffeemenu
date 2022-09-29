@@ -6,6 +6,7 @@
 - normalize names like COLOMBIA and Colombia
 - do better with SQ1, possibly by following links
 - follow links to scrape more info like price, tasting notes
+- cmd/menu/menu_test.go
 
 # Sites to add
 - https://www.kindredcoffeeroasters.com
