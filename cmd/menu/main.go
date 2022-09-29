@@ -5,13 +5,19 @@ import (
 	"embed"
 	"flag"
 	"fmt"
+	"os"
 	"sync"
 
 	_ "embed"
 
 	"github.com/mikepartelow/coffeemenu"
+	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 )
+
+func init() {
+	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
+}
 
 func main() {
 	boring := flag.Bool("boring", false, "render boring MarkDown")
