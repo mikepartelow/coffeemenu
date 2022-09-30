@@ -1,0 +1,9 @@
+{
+    "name": "Cortez Coffee Roasters",
+    "urls": [ "https://cortezcoffee.com/collections/coffee" ],
+    "scrapespec": {
+        "container": "div.grid-product__content",
+        "name": ["ChildText", "div.grid-product__title"],
+        "url": ["ChildAttr", "a", "href"]
+    }
+}
